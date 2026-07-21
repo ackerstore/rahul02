@@ -15,6 +15,7 @@ API_ID = 36004853
 API_HASH = 'c7177a258363a75ddb1352816ba970cf'
 BOT_TOKEN = '8905550636:AAF5jP5mZ3QWGDKcb10winOdrKvTDld1J38'
 ADMIN_ID = [8348667414]
+PLATINUM = [8348667414]
 CHECKER_API_URL = 'http://api-production-6b29.up.railway.app/shopify'
 
 # Force Join Config
@@ -1582,16 +1583,17 @@ async def single_cc_check(event):
 @bot.on(events.NewMessage(pattern='/chk'))
 async def check_command(event):
     user_id = event.sender_id
+
     try:
         sender = await event.get_sender()
         username = sender.username if sender.username else f"user_{user_id}"
     except:
         username = f"user_{user_id}"
 
-    # Premium users are NOT allowed gk
-    if is_premium(user_id):
+    # Only Platinum users can use this command
+    if user_id not in PLATINUM:
         await event.reply(
-            premium_emoji("❌ Key users cannot use this command."),
+            premium_emoji("❌ Only Platinum users can use this command."),
             parse_mode='html'
         )
         return
