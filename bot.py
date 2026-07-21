@@ -15,7 +15,7 @@ API_ID = 36004853
 API_HASH = 'c7177a258363a75ddb1352816ba970cf'
 BOT_TOKEN = '8979290742:AAGKgQfa6KuMggKKIwVxvwml3iVIW2GjQSc'
 ADMIN_ID = [8348667414]
-CHECKER_API_URL = 'http://127.0.0.1:5020/shopify'
+CHECKER_API_URL = 'https://rahul02-production.up.railway.app/shopify'
 
 # Force Join Config
 CHANNEL_ID = -1003346517656
