@@ -1,5 +1,5 @@
 import threading
-from Autoshopify import app
+from api import app
 from bot import start_bot
 
 def run_api():
