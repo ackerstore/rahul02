@@ -1273,7 +1273,7 @@ async def main_menu_callback(event):
             count = len([s for s in sites_data if f['min'] <= s.get('price', 0) < f['max']])
         filter_text += f"   ┣ {f['name']}  {count}\n"
     
-    welcome_text = f""━━━━━━━━━━━━━━
+    welcome_text = f"""━━━━━━━━━━━━━━
 ☆ 𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝘁𝗼 Shopi X 𝗕𝗼𝘁 
 
 ✧ 𝗘𝘃𝗲𝗿𝘆𝘁𝗵𝗶𝗻𝗴 𝘆𝗼𝘂 𝗻𝗲𝗲𝗱 𝗶𝗻 𝗼𝗻𝗲 𝗽𝗹𝗮𝗰𝗲
