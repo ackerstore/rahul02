@@ -16,7 +16,7 @@ API_HASH = 'c7177a258363a75ddb1352816ba970cf'
 BOT_TOKEN = '8905550636:AAF5jP5mZ3QWGDKcb10winOdrKvTDld1J38'
 ADMIN_ID = [8348667414]
 PLATINUM = [8348667414]
-CHECKER_API_URL = 'http://api-production-6b29.up.railway.app/shopify'
+CHECKER_API_URL = 'http://api-production-1ca7.up.railway.app/shopify'
 
 # Force Join Config
 CHANNEL_ID = -1003346517656
