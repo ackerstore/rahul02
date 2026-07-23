@@ -1156,15 +1156,13 @@ async def show_home(event):
             count = len([s for s in sites_data if f['min'] <= s.get('price', 0) < f['max']])
         filter_text += f"   ┣ {f['name']}  {count}\n"
     
-    welcome_text = f"""━━━━━━━━━━━━━━━━━━
-☆ 𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝘁𝗼 Shopi X 𝗕𝗼𝘁 
+    welcome_text = f"""━━━━━━━━━━━━━━━━
+✧ 𝗪𝗲𝗹𝗰𝗼𝗺𝗲 𝘁𝗼 Shopi X 𝗕𝗼𝘁 
 
 ✧ 𝗘𝘃𝗲𝗿𝘆𝘁𝗵𝗶𝗻𝗴 𝘆𝗼𝘂 𝗻𝗲𝗲𝗱 𝗶𝗻 𝗼𝗻𝗲 𝗽𝗹𝗮𝗰𝗲
 ✯ 𝗛𝗶𝗴𝗵-𝘀𝗽𝗲𝗲𝗱 Shopify 𝗴𝗮𝘁𝗲𝘄𝗮𝘆 𝗰𝗵𝗲𝗰𝗸𝗲𝗿
-✯ 𝗙𝗶𝗹𝗲 𝗠𝗮𝗻𝗮𝗴𝗲𝗺𝗲𝗻𝘁 • 𝗟𝗼𝗼𝗸𝘂𝗽𝘀 • 𝗚𝗲𝗻𝗲𝗿𝗮𝘁𝗼𝗿𝘀 
-⍟  𝗕𝗜𝗡 • 𝗜𝗣 • 𝗜𝗕𝗔𝗡 • 𝗙𝗮𝗸𝗲 𝗗𝗮𝘁𝗮 • 𝗦𝗶𝘁𝗲 𝗦𝗰𝗮𝗻𝗻𝗲𝗿
+⍟   New Tools included 
 ━━━━━━━━━━━━━━━━━
-💡 Bᴏᴛ Dᴇᴠ @Kesav82
  Vᴇʀsɪᴏɴ -»2.0 🚀
 ━━━━━━━━━━━━━━━━━"""
     
