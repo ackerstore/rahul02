@@ -1231,6 +1231,7 @@ async def admin_panel_callback(event):
 🔌 Pʀᴏxʏ Mᴀɴᴀɢᴇᴍᴇɴᴛ
 ├─ <code>/proxy</code> → Cʜᴇᴄᴋ & ʀᴇᴍᴏᴠᴇ ᴅᴇᴀᴅ ᴘʀᴏxɪᴇs
 ├─ <code>/addproxy</code> → Aᴅᴅ ᴘʀᴏxɪᴇs
+├─ <code>/txtproxy</code> → Rᴇᴘʟʏ ᴛᴏ .ᴛxᴛ ғɪʟᴇ to upload proxy
 ├─ <code>/chkproxy ᴘʀᴏxʏ</code> → Cʜᴇᴄᴋ sɪɴɢʟᴇ ᴘʀᴏxʏ
 ├─ <code>/rmproxy ᴘʀᴏxʏ</code> → Rᴇᴍᴏᴠᴇ sɪɴɢʟᴇ ᴘʀᴏxʏ
 ├─ <code>/rmproxyindex 1,2,3</code> → Rᴇᴍᴏᴠᴇ ʙʏ ɪɴᴅᴇx
@@ -1697,6 +1698,95 @@ async def proxy_command(event):
         
     except Exception as e:
         await status_msg.edit(premium_emoji(f"❌ Eʀʀᴏʀ: {e}"), parse_mode='html')
+
+#gk
+@bot.on(events.NewMessage(pattern='/txtproxy'))
+async def proxytxt_command(event):
+    user_id = event.sender_id
+
+    if user_id not in ADMIN_ID:
+        return
+
+    if not event.reply_to_msg_id:
+        return await event.reply(
+            premium_emoji("❌ Pʟᴇᴀsᴇ Rᴇᴘʟʏ Tᴏ A .TXT Pʀᴏxʏ Fɪʟᴇ!"),
+            parse_mode="html"
+        )
+
+    reply = await event.get_reply_message()
+
+    if not reply.file or not reply.file.name.lower().endswith(".txt"):
+        return await event.reply(
+            premium_emoji("❌ Pʟᴇᴀsᴇ Rᴇᴘʟʏ Tᴏ A Vᴀʟɪᴅ .TXT Fɪʟᴇ!"),
+            parse_mode="html"
+        )
+
+    try:
+        file_path = await reply.download_media()
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            proxies = [line.strip() for line in f if line.strip()]
+
+        if not proxies:
+            return await event.reply(
+                premium_emoji("❌ Nᴏ Pʀᴏxɪᴇs Fᴏᴜɴᴅ Iɴ Tʜᴇ Fɪʟᴇ!"),
+                parse_mode="html"
+            )
+
+        status_msg = await event.reply(
+            premium_emoji(f"🔄 Cʜᴇᴄᴋɪɴɢ {len(proxies)} ᴘʀᴏxɪᴇs..."),
+            parse_mode="html"
+        )
+
+        current_proxies = load_proxies()
+
+        alive_proxies = []
+        dead_proxies = []
+        already_exists = []
+
+        for i, proxy in enumerate(proxies, 1):
+
+            if proxy in current_proxies:
+                already_exists.append(proxy)
+                continue
+
+            await status_msg.edit(
+                premium_emoji(
+                    f"🔄 Cʜᴇᴄᴋɪɴɢ [{i}/{len(proxies)}]:\n<code>{proxy[:40]}...</code>"
+                ),
+                parse_mode="html"
+            )
+
+            result = await test_proxy(proxy)
+
+            if result["status"] == "alive":
+                alive_proxies.append(proxy)
+            else:
+                dead_proxies.append(proxy)
+
+        if alive_proxies:
+            async with aiofiles.open(PROXY_FILE, "a") as f:
+                for proxy in alive_proxies:
+                    await f.write(f"{proxy}\n")
+
+        result_text = f"""✅ Pʀᴏxʏ Cʜᴇᴄᴋ & Aᴅᴅ Cᴏᴍᴘʟᴇᴛᴇ!
+
+📊 Rᴇsᴜʟᴛs:
+   ┣ ✅ Aʟɪᴠᴇ (Aᴅᴅᴇᴅ): {len(alive_proxies)}
+   ┣ ❌ Dᴇᴀᴅ (Iɢɴᴏʀᴇᴅ): {len(dead_proxies)}
+   ┣ ⚠️ Exɪsᴛɪɴɢ (Sᴋɪᴘᴘᴇᴅ): {len(already_exists)}
+   ┗ 📁 Tᴏᴛᴀʟ ɪɴ ᴘʀᴏxʏ.ᴛxᴛ: {len(load_proxies())}"""
+
+        await status_msg.edit(
+            premium_emoji(result_text),
+            parse_mode="html"
+        )
+
+    except Exception as e:
+        await event.reply(
+            premium_emoji(f"❌ Eʀʀᴏʀ: {e}"),
+            parse_mode="html"
+        )
 
 @bot.on(events.NewMessage(pattern=r'/chkproxy\s+'))
 async def check_single_proxy(event):
