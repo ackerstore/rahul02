@@ -16,7 +16,7 @@ API_HASH = 'c7177a258363a75ddb1352816ba970cf'
 BOT_TOKEN = '8905550636:AAF5jP5mZ3QWGDKcb10winOdrKvTDld1J38'
 ADMIN_ID = [8348667414]
 PLATINUM = [8348667414]
-CHECKER_API_URL = 'http://api-production-1ca7.up.railway.app/shopify'
+CHECKER_API_URL = 'http://127.0.0.1:5020/shopify'
 
 # Force Join Config
 CHANNEL_ID = -1003346517656
@@ -1577,6 +1577,7 @@ async def single_cc_check(event):
     except Exception as e:
         await status_msg.edit(premium_emoji(f"❌ Eʀʀᴏʀ: {e}"), parse_mode='html')
 
+
 @bot.on(events.NewMessage(pattern='/chk'))
 async def check_command(event):
     user_id = event.sender_id
@@ -1674,7 +1675,7 @@ async def proxy_command(event):
     
     alive_proxies = []
     dead_proxies = []
-    batch_size = 50
+    batch_size = 1
     
     try:
         for i in range(0, len(proxies), batch_size):
@@ -1699,7 +1700,7 @@ async def proxy_command(event):
     except Exception as e:
         await status_msg.edit(premium_emoji(f"❌ Eʀʀᴏʀ: {e}"), parse_mode='html')
 
-#gk
+
 @bot.on(events.NewMessage(pattern='/txtproxy'))
 async def proxytxt_command(event):
     user_id = event.sender_id
@@ -1721,9 +1722,9 @@ async def proxytxt_command(event):
             parse_mode="html"
         )
 
-    try:
-        file_path = await reply.download_media()
+    file_path = await reply.download_media()
 
+    try:
         with open(file_path, "r", encoding="utf-8") as f:
             proxies = [line.strip() for line in f if line.strip()]
 
@@ -1734,7 +1735,7 @@ async def proxytxt_command(event):
             )
 
         status_msg = await event.reply(
-            premium_emoji(f"🔄 Cʜᴇᴄᴋɪɴɢ {len(proxies)} ᴘʀᴏxɪᴇs..."),
+            premium_emoji(f"🔄 Cʜᴇᴄᴋɪɴɢ {len(proxies)} Pʀᴏxɪᴇs..."),
             parse_mode="html"
         )
 
@@ -1743,44 +1744,54 @@ async def proxytxt_command(event):
         alive_proxies = []
         dead_proxies = []
         already_exists = []
+        proxies_to_check = []
 
-        for i, proxy in enumerate(proxies, 1):
-
+        for proxy in proxies:
             if proxy in current_proxies:
                 already_exists.append(proxy)
-                continue
+            else:
+                proxies_to_check.append(proxy)
+
+        batch_size = 10
+
+        for i in range(0, len(proxies_to_check), batch_size):
+            batch = proxies_to_check[i:i + batch_size]
+            tasks = [test_proxy(proxy) for proxy in batch]
+            results = await asyncio.gather(*tasks)
+
+            for res in results:
+                if res["status"] == "alive":
+                    alive_proxies.append(res["proxy"])
+                else:
+                    dead_proxies.append(res["proxy"])
 
             await status_msg.edit(
                 premium_emoji(
-                    f"🔄 Cʜᴇᴄᴋɪɴɢ [{i}/{len(proxies)}]:\n<code>{proxy[:40]}...</code>"
+                    f"🔄 Cʜᴇᴄᴋɪɴɢ Pʀᴏxɪᴇs...\n\n"
+                    f"Checked: {len(alive_proxies) + len(dead_proxies)}/{len(proxies_to_check)}\n"
+                    f"Aʟɪᴠᴇ: {len(alive_proxies)}\n"
+                    f"Dᴇᴀᴅ: {len(dead_proxies)}"
                 ),
                 parse_mode="html"
             )
 
-            result = await test_proxy(proxy)
-
-            if result["status"] == "alive":
-                alive_proxies.append(proxy)
-            else:
-                dead_proxies.append(proxy)
-
-        if alive_proxies:
-            async with aiofiles.open(PROXY_FILE, "a") as f:
-                for proxy in alive_proxies:
-                    await f.write(f"{proxy}\n")
+        # Save alive proxies to PROXY_FILE
+        async with aiofiles.open(PROXY_FILE, "a") as f:
+            for proxy in alive_proxies:
+                await f.write(f"{proxy}\n")
 
         result_text = f"""✅ Pʀᴏxʏ Cʜᴇᴄᴋ & Aᴅᴅ Cᴏᴍᴘʟᴇᴛᴇ!
 
-📊 Rᴇsᴜʟᴛs:
-   ┣ ✅ Aʟɪᴠᴇ (Aᴅᴅᴇᴅ): {len(alive_proxies)}
-   ┣ ❌ Dᴇᴀᴅ (Iɢɴᴏʀᴇᴅ): {len(dead_proxies)}
-   ┣ ⚠️ Exɪsᴛɪɴɢ (Sᴋɪᴘᴘᴇᴅ): {len(already_exists)}
-   ┗ 📁 Tᴏᴛᴀʟ ɪɴ ᴘʀᴏxʏ.ᴛxᴛ: {len(load_proxies())}"""
+        📊 Rᴇsᴜʟᴛs:
+            ┣ ✅ Aʟɪᴠᴇ (Aᴅᴅᴇᴅ): {len(alive_proxies)}
+            ┣ ❌ Dᴇᴀᴅ (Iɢɴᴏʀᴇᴅ): {len(dead_proxies)}
+            ┣ ⚠️ Exɪsᴛɪɴɢ (Sᴋɪᴘᴘᴇᴅ): {len(already_exists)}
+            ┗ 📁 Tᴏᴛᴀʟ ɪɴ ᴘʀᴏxʏ.ᴛxᴛ: {len(load_proxies())}"""
 
         await status_msg.edit(
-            premium_emoji(result_text),
-            parse_mode="html"
-        )
+                    premium_emoji(result_text),
+                    parse_mode="html"
+                )
 
     except Exception as e:
         await event.reply(
